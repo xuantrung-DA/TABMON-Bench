@@ -1,2 +1,4 @@
 .paper/
 data/
+__pycache__/
+*.py[cod]
