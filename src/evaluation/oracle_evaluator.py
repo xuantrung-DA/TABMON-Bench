@@ -5,6 +5,8 @@ import pandas as pd
 from scipy.stats import spearmanr
 from sklearn.metrics import log_loss
 
+from src.evaluation.risk import BINARY_LOG_LOSS_EPSILON
+
 
 class OracleEvaluator:
     """Offline evaluator and the only component allowed to read target labels.
@@ -37,7 +39,11 @@ class OracleEvaluator:
     def _calculate_log_loss(self, df: pd.DataFrame) -> float:
         X, y = self._split(df)
         probabilities = np.asarray(self.model.predict_proba(X))[:, 1]
-        probabilities = np.clip(probabilities, 1e-7, 1.0 - 1e-7)
+        probabilities = np.clip(
+            probabilities,
+            BINARY_LOG_LOSS_EPSILON,
+            1.0 - BINARY_LOG_LOSS_EPSILON,
+        )
         return float(log_loss(y, probabilities, labels=[0, 1]))
 
     def calculate_true_excess_risk(self, target_batch: pd.DataFrame) -> float:

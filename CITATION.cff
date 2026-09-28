@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use TabMon-Bench, please cite the accompanying manuscript and this software artifact."
+title: "TabMon-Bench: When Can Label-Free Model Monitoring Be Trusted under Tabular Distribution Shifts?"
+type: software
+authors:
+  - family-names: Nguyen
+    given-names: Xuan Trung
+version: "0.13.0"
+date-released: 2026-09-28
+license: MIT
+abstract: >-
+  TabMon-Bench evaluates the reliability of label-free risk estimation,
+  shift attribution, and sequential harmful-shift detection on controlled
+  tabular deployment streams while withholding target labels from monitors.
+keywords:
+  - label-free model monitoring
+  - distribution shift
+  - performance estimation
+  - tabular machine learning

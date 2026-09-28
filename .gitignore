@@ -1,4 +1,50 @@
+# Local environments and editor state
 .paper/
-data/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.code-workspace
+.ipynb_checkpoints/
+
+# Python caches and test/coverage artifacts
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Generated benchmark data, models, and analyses
+data/
+artifacts/
+results/
+
+# Local logs, checkpoints, and packaged Kaggle outputs
+*.log
+*.zip
+*.tar
+*.tar.gz
+
+# Internal execution notes and historical workflow documents
+KAGGLE_FINAL_THREE_STAGES.md
+KAGGLE_PHASE5_PERFORMANCE_ESTIMATORS.md
+KAGGLE_RELIABILITY_PILOT.md
+KAGGLE_SCHEMA_V7_RESCORE.md
+KAGGLE_SCHEMA_V8.md
+KAGGLE_STEP12_FIDELITY_RERUN.md
+KAGGLE_STEP12_Q1_EXTENSION.md
+KAGGLE_STEP6_COMMON_BACKEND.md
+KAGGLE_STREAM_CACHE_V1.md
+METHOD_FIDELITY_SHD_XPE.md
+STATISTICAL_ANALYSIS.md
