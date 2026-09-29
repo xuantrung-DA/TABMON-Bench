@@ -230,7 +230,58 @@ Run the associated cache audit before downstream evaluation. Cached features,
 predictions, and oracle arrays allow new monitors to be evaluated on exactly
 the same predictor streams without retraining the base models.
 
-### 4. Run and audit Schema 13
+### 4. Run the PAPE extension
+
+PAPE is evaluated on the existing binary cache and writes to an independent,
+resumable result directory. Density-ratio fits are shared across the four
+predictors for a feature stream, while the probability calibrator remains
+predictor-specific. Do not pass `--max-reference-rows` for the publication
+run; that option exists only for smoke tests and development.
+
+```bash
+python experiments/run_pape_phase1.py \
+  --cache-dir results/binary_cache_10_seeds \
+  --phase5-results-dir results/phase5_performance_estimators \
+  --output-dir results/pape_phase1 \
+  --lightgbm-n-jobs 2 \
+  --max-hours 11.5
+```
+
+Rerun the identical command after a time-limited session; completed stream
+files are reused. When `pape_status.json` reports `"complete": true`, audit
+and analyze the full result:
+
+```bash
+python experiments/audit_pape_phase1.py \
+  --output-dir results/pape_phase1 \
+  --require-full-reference
+
+python experiments/analyze_pape_phase1.py \
+  --pape-dir results/pape_phase1 \
+  --phase5-dir results/phase5_performance_estimators \
+  --output-dir results/pape_phase1_analysis \
+  --bootstrap-replicates 5000
+```
+
+The analysis reports PAPE MAE, failure rates at tolerances 0.02/0.05/0.10,
+sign accuracy, and paired PAPE--AC/PAPE--COTT differences with crossed
+dataset--seed bootstrap intervals and Benjamini--Hochberg correction. The
+runner marks null, covariate, and correlated-covariate streams as the declared
+covariate-shift scope; concept, pipeline, and support shifts remain explicit
+stress tests outside that scope.
+
+For a quick wiring check, use `--smoke-test --max-reference-rows 5000` with a
+separate output directory. The optional fidelity audit loads, but does not
+vendor, a local checkout of the authors' implementation:
+
+```bash
+git clone https://github.com/pape-research/pape_r.git ../pape_r
+python experiments/audit_pape_fidelity.py \
+  --official-repo ../pape_r \
+  --output results/pape_fidelity.json
+```
+
+### 5. Run and audit Schema 13
 
 The full binary, multiclass, SHD-sensitivity, and final-analysis sequence is
 long-running and checkpointed for time-limited compute platforms. Use
@@ -238,7 +289,7 @@ long-running and checkpointed for time-limited compute platforms. Use
 seed, and time-limit arguments. Each completed stage must pass its matching
 `audit_*.py` script before the next stage is accepted.
 
-### 5. Recompute final statistics
+### 6. Recompute final statistics
 
 ```bash
 python experiments/analyze_step12_schema13.py \

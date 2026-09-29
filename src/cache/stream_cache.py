@@ -274,6 +274,21 @@ class ObservableCacheReader:
         assert_observable_columns(frame.columns)
         return frame[feature_columns(frame)]
 
+    def load_target_features_with_keys(self, stream_id: str) -> pd.DataFrame:
+        """Return monitor-visible target features with stable batch/row keys.
+
+        Window-adaptive monitors such as PAPE must fit separately on each
+        deployment batch.  The keys expose that partition without opening any
+        target label, intervention target, or oracle quantity.
+        """
+
+        frame = pd.read_parquet(self.root / "streams" / f"{stream_id}.parquet")
+        assert_observable_columns(frame.columns)
+        missing = sorted(set(KEY_COLUMNS) - set(frame.columns))
+        if missing:
+            raise ValueError(f"Observable feature stream is missing keys: {missing}")
+        return frame[KEY_COLUMNS + feature_columns(frame)]
+
     def load_target_probabilities(self, predictor_stream_id: str) -> pd.DataFrame:
         frame = pd.read_parquet(
             self.root / "predictions" / f"{predictor_stream_id}.parquet"
